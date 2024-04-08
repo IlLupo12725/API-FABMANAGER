@@ -58,6 +58,7 @@ class Available :
             for i in range (len(reservation['reserved_slots'])):
                 filtered_reservation = {
                     'reservation_id': reservation['id'],
+                    'full_name' : reservation['user']['full_name'],
                     'machine_id': reservation['reservable_id'],
                     'start_at': reservation['reserved_slots'][i]['start_at'],  # Assuming there's at least one slot
                     'end_at': reservation['reserved_slots'][i]['end_at']
@@ -72,20 +73,20 @@ class Available :
     def is_machine_available(self):
         with open('opti.json', 'r') as input_json_file:
             data = json.load(input_json_file)
-
+        booked_slots=[]
         # Parcourir toutes les réservations
         for reservation in data:
             # Vérifier si la réservation concerne la machine spécifiée
             if reservation["machine_id"] == self.id:
                 reserved_start = reservation['start_at']
                 reserved_end = reservation['end_at']
+                full_name = reservation['full_name']
                 # Vérifier si le créneau réservé chevauche le créneau spécifié
                 if self.start < reserved_end and self.end > reserved_start:
-                    print('pas dispo')
-                    return False  # La machine n'est pas disponible
-        print('dispo')
-        return True  # La machine est disponible
+                    booked_slots.append({'start_at': reserved_start, 'end_at': reserved_end, 'full_name': full_name})
 
+        
+        return booked_slots
 
 
 
@@ -95,6 +96,6 @@ class Available :
 
 if __name__=='__main__':
     token = 'oPec4DpLw9mdFkqr3erCYwig'
-    instance = Available(token,"2024-04-10T18:00:00+02:00","2024-04-10T19:00:00+02:00",1)
+    instance = Available(token,"2024-04-10T18:00:00+02:00","2024-04-10T20:00:00+02:00",1)
     availbilities = instance.is_machine_available()
     
