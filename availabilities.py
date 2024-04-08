@@ -74,17 +74,16 @@ class Available :
             data = json.load(input_json_file)
 
         # Parcourir toutes les réservations
-        for reservation in data["reservations"]:
-            
+        for reservation in data:
             # Vérifier si la réservation concerne la machine spécifiée
-            if (reservation.machine_id == self.id):
-                # Parcourir les créneaux réservés
-                for reserved_slot in reservation['reserved_slots']:
-                    reserved_start = reserved_slot['start_at']
-                    reserved_end = reserved_slot['end_at']
-                    # Vérifier si le créneau réservé chevauche le créneau spécifié
-                    if (self.start < reserved_end and self.end > reserved_start):
-                        return False  # La machine n'est pas disponible
+            if reservation["machine_id"] == self.id:
+                reserved_start = reservation['start_at']
+                reserved_end = reservation['end_at']
+                # Vérifier si le créneau réservé chevauche le créneau spécifié
+                if self.start < reserved_end and self.end > reserved_start:
+                    print('pas dispo')
+                    return False  # La machine n'est pas disponible
+        print('dispo')
         return True  # La machine est disponible
 
 
@@ -96,6 +95,6 @@ class Available :
 
 if __name__=='__main__':
     token = 'oPec4DpLw9mdFkqr3erCYwig'
-    instance = Available(token,"2024-04-09T00:00:00+02:00","2024-04-10T00:00:00+02:00",1)
+    instance = Available(token,"2024-04-10T18:00:00+02:00","2024-04-10T19:00:00+02:00",1)
     availbilities = instance.is_machine_available()
     
